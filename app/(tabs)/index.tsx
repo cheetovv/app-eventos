@@ -5,6 +5,8 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+  const [usuario, setUsuario] = useState<any>(null);
+  const [estado, setEstado] = useState("");
   const [resultado, setResultado] = useState("");
 
   useEffect(() => {
