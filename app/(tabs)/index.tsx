@@ -30,13 +30,21 @@ export default function App() {
       const result = await response.json();
 
       if (result.success) {
-        setResultado("✅ " + result.usuario.nombre);
+        setUsuario(result.usuario);
+        setEstado("valido");
       } else {
-        setResultado("❌ No encontrado");
+        setUsuario(null);
+        setEstado("no_encontrado");
       }
     } catch (error) {
-      setResultado("⚠️ Error de conexión");
+      setEstado("error")
     }
+  };
+
+  const resetScan = () =>{
+    setScanned(false);
+    setUsuario(null);
+    setEstado("");
   };
 
   if (!permission) {
@@ -49,27 +57,72 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <CameraView
+      {!scanned && (
+        <CameraView
         style={StyleSheet.absoluteFillObject}
-        barcodeScannerSettings={{
-          barcodeTypes: ["qr"],
-        }}
+        barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
         onBarcodeScanned={handleScan}
-      />
+        />
+      )}
 
-      <Text style={styles.result}>{resultado}</Text>
+      {scanned && (
+        <View style={styles.resultContainer}>
+          {estado === "valido" && usuario && (
+            <>
+              <Text style={styles.success}>✅ Acceso permitido</Text>
+              <Text style={styles.text}>👤 {usuario.nombre}</Text>
+              <Text style={styles.text}>📧 {usuario.email}</Text>
+            </>
+          )}
+
+          {estado === "no_encontrado" && (
+            <Text style={styles.error}>❌ Usuario no encontrado</Text>
+          )}
+
+          {estado === "error" && (
+            <Text style={styles.warning}>⚠️ Error de conexión</Text>
+          )}
+
+          <Text style={styles.button} onPress={resetScan}>
+            🔄 Escanear otra vez
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  result: {
-    position: "absolute",
-    bottom: 50,
-    alignSelf: "center",
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  resultContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 18,
+    marginTop: 10,
+  },
+  success: {
+    fontSize: 22,
+    color: "green",
+    fontWeight: "bold",
+  },
+  error: {
+    fontSize: 22,
+    color: "red",
+    fontWeight: "bold",
+  },
+  warning: {
     fontSize: 20,
-    backgroundColor: "white",
-    padding: 10,
+    color: "orange",
+  },
+  button: {
+    marginTop: 30,
+    fontSize: 18,
+    color: "#007AFF",
   },
 });
