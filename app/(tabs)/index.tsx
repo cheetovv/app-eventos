@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { router } from "expo-router";
 
 export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -9,6 +10,7 @@ export default function App() {
   const [estado, setEstado] = useState("");
   const [resultado, setResultado] = useState("");
   const [escanerActivo, setEscanerActivo] = useState(false);
+  const [historial, setHistorial] = useState<any[]>([]);
 
   useEffect(() => {
     requestPermission();
@@ -34,13 +36,40 @@ export default function App() {
       if (result.success) {
         setUsuario(result.usuario);
         setEstado("valido");
+
+        setHistorial((prev) =>[
+          {
+            nombre: result.usuario.nombre,
+            estado: "valido",
+            hora: obtenerHora(),
+          },
+          ...prev,
+        ]);
       } else {
         if (result.message === "ya_usado") {
           setUsuario(result.usuario);
           setEstado("ya_usado");
+
+          setHistorial((prev) =>[
+          {
+            nombre: result.usuario.nombre,
+            estado: "ya_usado",
+            hora: obtenerHora(),
+          },
+          ...prev,
+        ]);
         } else {
           setUsuario(null);
           setEstado("no_encontrado");
+
+          setHistorial((prev) =>[
+          {
+            nombre: "Desconocido",
+            estado: "no_encontrado",
+            hora: obtenerHora(),
+          },
+          ...prev,
+        ]);
         }
       }
     } catch (error) {
@@ -55,6 +84,11 @@ export default function App() {
     setEscanerActivo(false);
   };
 
+  const obtenerHora = () => {
+    const ahora = new Date();
+    return ahora.toLocaleTimeString();
+  };
+
   if (!permission) {
     return <Text>Pidiendo permisos...</Text>;
   }
@@ -65,6 +99,18 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Text
+        style={styles.historialButton}
+        onPress={() => router.push({
+          pathname: "/historial",
+          params: {
+           data: JSON.stringify(historial), 
+          },
+        })
+      }
+      >
+        📋 Ver historial
+      </Text>
       {!scanned && (
         <>
           <CameraView
@@ -177,4 +223,11 @@ const styles = StyleSheet.create({
     borderColor: "#00FF00",
     borderRadius: 10,
   },
+  historialButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    fontSize: 16,
+    color: "#007AFF"
+  }
 });
