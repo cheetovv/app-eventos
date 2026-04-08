@@ -8,14 +8,16 @@ export default function App() {
   const [usuario, setUsuario] = useState<any>(null);
   const [estado, setEstado] = useState("");
   const [resultado, setResultado] = useState("");
+  const [escanerActivo, setEscanerActivo] = useState(false);
 
   useEffect(() => {
     requestPermission();
   }, []);
 
   const handleScan = async ({ data }: { data: string }) => {
-    if (scanned) return;
+    if (!escanerActivo || scanned) return;
 
+    setEscanerActivo(false);
     setScanned(true);
 
     try {
@@ -33,8 +35,13 @@ export default function App() {
         setUsuario(result.usuario);
         setEstado("valido");
       } else {
-        setUsuario(null);
-        setEstado("no_encontrado");
+        if (result.message === "ya_usado") {
+          setUsuario(result.usuario);
+          setEstado("ya_usado");
+        } else {
+          setUsuario(null);
+          setEstado("no_encontrado");
+        }
       }
     } catch (error) {
       setEstado("error")
@@ -45,6 +52,7 @@ export default function App() {
     setScanned(false);
     setUsuario(null);
     setEstado("");
+    setEscanerActivo(false);
   };
 
   if (!permission) {
@@ -58,11 +66,20 @@ export default function App() {
   return (
     <View style={styles.container}>
       {!scanned && (
-        <CameraView
-        style={StyleSheet.absoluteFillObject}
-        barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
-        onBarcodeScanned={handleScan}
-        />
+        <>
+          <CameraView
+            style={StyleSheet.absoluteFillObject}
+            barcodeScannerSettings={{barcodeTypes: ["qr"] }}
+            onBarcodeScanned={handleScan}
+          />
+
+          <Text
+            style={styles.scanButton}
+            onPress={() => setEscanerActivo(true)}
+          >
+            Escanear
+          </Text>
+        </>
       )}
 
       {scanned && (
@@ -70,6 +87,14 @@ export default function App() {
           {estado === "valido" && usuario && (
             <>
               <Text style={styles.success}>✅ Acceso permitido</Text>
+              <Text style={styles.text}>👤 {usuario.nombre}</Text>
+              <Text style={styles.text}>📧 {usuario.email}</Text>
+            </>
+          )}
+
+          {estado === "ya_usado" && usuario && (
+            <>
+              <Text style={styles.warning}>⚠️ Usuario ya ingresó</Text>
               <Text style={styles.text}>👤 {usuario.nombre}</Text>
               <Text style={styles.text}>📧 {usuario.email}</Text>
             </>
@@ -124,5 +149,16 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontSize: 18,
     color: "#007AFF",
+  },
+  scanButton: {
+    position: "absolute",
+    bottom: 100,
+    alignSelf: "center",
+    backgroundColor: "#007AFF",
+    color: "white",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    fontSize: 18,
   },
 });
