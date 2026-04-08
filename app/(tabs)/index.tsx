@@ -73,6 +73,10 @@ export default function App() {
             onBarcodeScanned={handleScan}
           />
 
+          <View style={styles.overlay}>
+            <View style={styles.scanBox} />
+          </View>
+
           <Text
             style={styles.scanButton}
             onPress={() => setEscanerActivo(true)}
@@ -160,5 +164,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     fontSize: 18,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  scanBox: {
+    width: 250,
+    height: 250,
+    borderWidth: 3,
+    borderColor: "#00FF00",
+    borderRadius: 10,
   },
 });
