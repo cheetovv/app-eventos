@@ -1,17 +1,28 @@
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
 
 export default function HistorialScreen() {
     const { data } = useLocalSearchParams();
-
     const historial = data ? JSON.parse(data as string) : [];
+    const [lista, setLista] = useState(historial);
+
+    const limpiarHistorial = async () => {
+      await AsyncStorage.removeItem("historial");
+      setLista([]);
+    }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>📋 Historial</Text>
+      
+      <Text style={styles.deleteButton} onPress={limpiarHistorial}>
+        🗑️ Limpiar historial  
+      </Text>
 
       <FlatList
-        data={historial}
+        data={lista}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
             <View style={styles.item}>
@@ -46,5 +57,9 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+  },
+  deleteButton: {
+    color: "red",
+    marginBottom: 10,
   },
 });

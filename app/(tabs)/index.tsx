@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -11,9 +12,18 @@ export default function App() {
   const [resultado, setResultado] = useState("");
   const [escanerActivo, setEscanerActivo] = useState(false);
   const [historial, setHistorial] = useState<any[]>([]);
+  
 
   useEffect(() => {
     requestPermission();
+  }, []);
+
+  useEffect(() => {
+    guardarHistorial();
+  }, [historial]);
+
+  useEffect(() => {
+    cargarHistorial();
   }, []);
 
   const handleScan = async ({ data }: { data: string }) => {
@@ -87,6 +97,25 @@ export default function App() {
   const obtenerHora = () => {
     const ahora = new Date();
     return ahora.toLocaleTimeString();
+  };
+
+  const guardarHistorial = async () => {
+    try {
+      await AsyncStorage.setItem("historial", JSON.stringify(historial));
+    }catch (error) {
+      console.log("Error guardando historial");
+    }
+  };
+
+  const cargarHistorial = async () => {
+    try {
+      const data = await AsyncStorage.getItem("historial");
+      if(data) {
+        setHistorial(JSON.parse(data));
+      }
+    }catch (error) {
+      console.log("Error al cargar el historial");
+    }
   };
 
   if (!permission) {
