@@ -2,6 +2,7 @@ import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HistorialScreen() {
     const { data } = useLocalSearchParams();
@@ -14,7 +15,7 @@ export default function HistorialScreen() {
     }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>📋 Historial</Text>
       
       <Text style={styles.deleteButton} onPress={limpiarHistorial}>
@@ -35,7 +36,8 @@ export default function HistorialScreen() {
             </View>
         )}
       />
-    </View>
+    </SafeAreaView>
+    
   );
 }
 

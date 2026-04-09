@@ -19,12 +19,16 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    guardarHistorial();
-  }, [historial]);
-
-  useEffect(() => {
     cargarHistorial();
   }, []);
+
+  useEffect(() => {
+    if(historial.length > 0){
+      guardarHistorial();
+    }
+  }, [historial]);
+
+  
 
   const handleScan = async ({ data }: { data: string }) => {
     if (!escanerActivo || scanned) return;
