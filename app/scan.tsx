@@ -131,7 +131,8 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container}> 
+
       <Text
         style={styles.historialButton}
         onPress={() => router.push({
