@@ -143,7 +143,7 @@ export default function App() {
         })
       }
       >
-        📋 Ver historial
+      Ver historial
       </Text>
       {!scanned && (
         <>
@@ -178,22 +178,22 @@ export default function App() {
 
           {estado === "ya_usado" && usuario && (
             <>
-              <Text style={styles.warning}>⚠️ Usuario ya ingresó</Text>
-              <Text style={styles.text}>👤 {usuario.nombre}</Text>
-              <Text style={styles.text}>📧 {usuario.email}</Text>
+              <Text style={styles.warning}>Usuario ya ingresó</Text>
+              <Text style={styles.text}>{usuario.nombre}</Text>
+              <Text style={styles.text}>{usuario.email}</Text>
             </>
           )}
 
           {estado === "no_encontrado" && (
-            <Text style={styles.error}>❌ Usuario no encontrado</Text>
+            <Text style={styles.error}>Usuario no encontrado</Text>
           )}
 
           {estado === "error" && (
-            <Text style={styles.warning}>⚠️ Error de conexión</Text>
+            <Text style={styles.warning}>Error de conexión</Text>
           )}
 
           <Text style={styles.button} onPress={resetScan}>
-            🔄 Escanear otra vez
+          Escanear otra vez
           </Text>
         </View>
       )}

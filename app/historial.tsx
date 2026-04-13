@@ -3,23 +3,38 @@ import { useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect } from "react";
 
 export default function HistorialScreen() {
-    const { data } = useLocalSearchParams();
-    const historial = data ? JSON.parse(data as string) : [];
-    const [lista, setLista] = useState(historial);
 
-    const limpiarHistorial = async () => {
+  useEffect(() => {
+    cargarHistorial();
+  }, []);
+
+  const [lista, setLista] = useState<any[]>([]);
+
+  const cargarHistorial = async () => {
+    try{
+      const data = await AsyncStorage.getItem("historial");
+      if (data) {
+        setLista(JSON.parse(data));
+      }
+    } catch (error) {
+      console.log("Error cargando historial");
+    }
+  };
+
+  const limpiarHistorial = async () => {
       await AsyncStorage.removeItem("historial");
       setLista([]);
-    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>📋 Historial</Text>
+      <Text style={styles.title}>Historial</Text>
       
       <Text style={styles.deleteButton} onPress={limpiarHistorial}>
-        🗑️ Limpiar historial  
+      Limpiar historial  
       </Text>
 
       <FlatList
