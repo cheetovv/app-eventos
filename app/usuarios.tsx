@@ -4,10 +4,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function UsuariosScreen() {
     const [usuarios, setUsuarios] = useState<any[]>([]);
+    const [filtro, setFiltro] = useState("todos");
 
     useEffect(() => {
         obtenerUsuarios();
     }, []);
+
+    const usuariosFiltrados = usuarios.filter((user) =>{
+        if(filtro === "disponibles") return !user.usado;
+        if(filtro === "usados") return user.usado;
+        return true;
+    });
 
     const obtenerUsuarios = async () => {
         try{
@@ -23,8 +30,14 @@ export default function UsuariosScreen() {
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Usuarios</Text>
 
+            <View style={styles.filtros}>
+                <Text style={[styles.filtroBtn, filtro === "todos" && styles.activo]} onPress={() => setFiltro("todos")}>Todos</Text>
+                <Text style={[styles.filtroBtn, filtro === "disponibles" && styles.disponible]} onPress={() => setFiltro("disponibles")}>Disponibles</Text>
+                <Text style={[styles.filtroBtn, filtro === "usados" && styles.usado]} onPress={() => setFiltro("usados")}>Usados</Text>
+            </View>
+
             <FlatList
-                data={usuarios}
+                data={usuariosFiltrados}
                 keyExtractor={(_, index) => index.toString()}
                 renderItem={({ item }) =>(
                     <View style={styles.item}>
@@ -59,5 +72,28 @@ const styles = StyleSheet.create({
     nombre: {
         fontSize: 16,
         fontWeight: "bold",
+    },
+    filtros: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        marginBottom: 15,
+    },
+    filtroBtn: {
+        fontSize: 14,
+        padding: 8,
+        backgroundColor: "#eee",
+        borderRadius: 8,
+    },
+    activo: {
+        backgroundColor: "#007AAF",
+        color: "white",
+    },
+    disponible: {
+        backgroundColor: "green",
+        color: "white",
+    },
+    usado: {
+        backgroundColor: "red",
+        color: "white",
     },
 });
