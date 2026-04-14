@@ -1,20 +1,31 @@
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { TextInput } from "react-native";
 
 export default function UsuariosScreen() {
     const [usuarios, setUsuarios] = useState<any[]>([]);
     const [filtro, setFiltro] = useState("todos");
+    const [busqueda, setBusqueda] = useState("");
 
     useEffect(() => {
         obtenerUsuarios();
     }, []);
 
     const usuariosFiltrados = usuarios.filter((user) =>{
-        if(filtro === "disponibles") return !user.usado;
-        if(filtro === "usados") return user.usado;
-        return true;
+        const coincideBusqueda =
+            user.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+            user.email.toLowerCase().includes(busqueda.toLowerCase());
+
+            if(filtro === "disponibles") return !user.usado && coincideBusqueda;
+            if(filtro === "usados") return user.usado && coincideBusqueda;
+
+            return coincideBusqueda;
     });
+
+    const total = usuarios.length;
+    const usados = usuarios.filter((u) => u.usado).length;
+    const disponibles = usuarios.filter((u) => !u.usado).length;
 
     const obtenerUsuarios = async () => {
         try{
@@ -30,9 +41,22 @@ export default function UsuariosScreen() {
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Usuarios</Text>
 
+            <View style={styles.stats}>
+                <Text style={styles.statText}>Total: {total}</Text>
+                <Text style={styles.statDisponibles}>No usados: {disponibles}</Text>
+                <Text style={styles.statUsados}>Usados: {usados}</Text>
+            </View>
+
+            <TextInput
+                style={styles.input}
+                placeholder="Buscar por nombre o email"
+                value={busqueda}
+                onChangeText={setBusqueda}   
+            />
+
             <View style={styles.filtros}>
                 <Text style={[styles.filtroBtn, filtro === "todos" && styles.activo]} onPress={() => setFiltro("todos")}>Todos</Text>
-                <Text style={[styles.filtroBtn, filtro === "disponibles" && styles.disponible]} onPress={() => setFiltro("disponibles")}>Disponibles</Text>
+                <Text style={[styles.filtroBtn, filtro === "disponibles" && styles.disponible]} onPress={() => setFiltro("disponibles")}>No usados</Text>
                 <Text style={[styles.filtroBtn, filtro === "usados" && styles.usado]} onPress={() => setFiltro("usados")}>Usados</Text>
             </View>
 
@@ -95,5 +119,29 @@ const styles = StyleSheet.create({
     usado: {
         backgroundColor: "red",
         color: "white",
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        padding: 10,
+        marginBottom: 10,
+    },
+    stats: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        marginBottom: 10,
+    },
+    statText: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    statDisponibles: {
+        fontSize: 16,
+        color: "green",
+    },
+    statUsados: {
+        fontSize: 16,
+        color: "red",
     },
 });
