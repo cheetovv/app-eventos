@@ -45,7 +45,11 @@ export default function App() {
         body: JSON.stringify({ qr_code: data }),
       });
 
+      console.log("Status: ", response.status);
+      console.log("Codigo recibido: ", {qr_code: data})
+
       const result = await response.json();
+      console.log("Respuesta: ", result);
 
       if (result.success) {
         setUsuario(result.usuario);

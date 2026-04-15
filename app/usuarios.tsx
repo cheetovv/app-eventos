@@ -41,12 +41,6 @@ export default function UsuariosScreen() {
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Usuarios</Text>
 
-            <View style={styles.stats}>
-                <Text style={styles.statText}>Total: {total}</Text>
-                <Text style={styles.statDisponibles}>No usados: {disponibles}</Text>
-                <Text style={styles.statUsados}>Usados: {usados}</Text>
-            </View>
-
             <TextInput
                 style={styles.input}
                 placeholder="Buscar por nombre o email"
@@ -58,6 +52,12 @@ export default function UsuariosScreen() {
                 <Text style={[styles.filtroBtn, filtro === "todos" && styles.activo]} onPress={() => setFiltro("todos")}>Todos</Text>
                 <Text style={[styles.filtroBtn, filtro === "disponibles" && styles.disponible]} onPress={() => setFiltro("disponibles")}>No usados</Text>
                 <Text style={[styles.filtroBtn, filtro === "usados" && styles.usado]} onPress={() => setFiltro("usados")}>Usados</Text>
+            </View>
+
+            <View style={styles.stats}>
+                <Text style={styles.statText}>Total: {total}</Text>
+                <Text style={styles.statDisponibles}>No usados: {disponibles}</Text>
+                <Text style={styles.statUsados}>Usados: {usados}</Text>
             </View>
 
             <FlatList
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 20,
+        textAlign: "center",
     },
     item: {
         padding: 15,

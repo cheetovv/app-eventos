@@ -15,10 +15,9 @@ export default function HistorialScreen() {
 
   const cargarHistorial = async () => {
     try{
-      const data = await AsyncStorage.getItem("historial");
-      if (data) {
-        setLista(JSON.parse(data));
-      }
+      const response = await fetch("http://192.168.0.12:3000/historial");
+      const data = await response.json();
+      setLista(data);
     } catch (error) {
       console.log("Error cargando historial");
     }
@@ -42,11 +41,20 @@ export default function HistorialScreen() {
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
             <View style={styles.item}>
-                <Text style={styles.text}>
-                    {item.estado === "valido" && "✅"}
-                    {item.estado === "ya_usado" && "⚠️"}
-                    {item.estado === "no_encontrado" && "❌"}{" "}
-                    {item.nombre} - {item.hora}
+
+                <Text style={styles.nombre}>
+                  {item.estado === "valido" && "🟢"}
+                  {item.estado === "ya_usado" && "🔴"}
+                  {item.estado === "no_encontrado" && "❌"}{" "}
+                  {item.nombre}
+                </Text>
+
+                {item.email ?(
+                  <Text style={styles.email}>{item.email}</Text>
+                ): null}
+
+                <Text style={styles.hora}>
+                  {new Date(item.fecha).toLocaleString()}
                 </Text>
             </View>
         )}
@@ -66,6 +74,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    textAlign: "center",
   },
   item: {
     padding: 10,
@@ -78,5 +87,19 @@ const styles = StyleSheet.create({
   deleteButton: {
     color: "red",
     marginBottom: 10,
+    textAlign: "right",
+  },
+  nombre: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  email: {
+    fontSize: 14,
+    color: "#555",
+  },
+  hora: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
   },
 });
